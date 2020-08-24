@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <group id="default_measurements" translate="label" type="text" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>Default Measurements</label>
+        <field id="default_weight" translate="label" type="text" sortOrder="900" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Default Weight</label>
+            <frontend_class>validate-number</frontend_class>
+            <comment>O valor padrão de peso, caso o atributo não esteja preenchido no produto.</comment>
+        </field>
+        <field id="default_height" translate="label" type="text" sortOrder="900" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Default Height</label>
+            <frontend_class>validate-number</frontend_class>
+            <comment>O valor padrão de altura, caso o atributo não esteja preenchido no produto.</comment>
+        </field>
+        <field id="default_length" translate="label" type="text" sortOrder="900" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Default Length</label>
+            <frontend_class>validate-number</frontend_class>
+            <comment>O valor padrão de comprimento, caso o atributo não esteja preenchido no produto.</comment>
+        </field>
+        <field id="default_width" translate="label" type="text" sortOrder="900" showInDefault="1" showInWebsite="1" showInStore="0">
+            <label>Default Width</label>
+            <frontend_class>validate-number</frontend_class>
+            <comment>O valor padrão de largura, caso o atributo não esteja preenchido no produto.</comment>
+        </field>
+    </group>
+</include>

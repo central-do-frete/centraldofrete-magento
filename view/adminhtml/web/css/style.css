@@ -1,0 +1,14 @@
+.central-do-frete-shipping-header-section {}
+
+.central-do-frete-shipping-header-section > .entry-edit-head {
+    background: url("../images/central_do_frete.png") 0 no-repeat;
+    padding: 10px 0 10px 100px;
+}
+
+.central-do-frete-shipping-header-section .entry-edit-head > a,
+.central-do-frete-shipping-header-section .entry-edit-head > a:active,
+.central-do-frete-shipping-header-section .entry-edit-head > a:hover,
+.central-do-frete-shipping-header-section .entry-edit-head > a:visited,
+.central-do-frete-shipping-header-section .entry-edit-head > a:focus {
+    visibility: visible;
+}

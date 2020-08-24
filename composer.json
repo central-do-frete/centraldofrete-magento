@@ -1,0 +1,22 @@
+{
+    "name": "buzzmage/centraldofrete-magento",
+    "version": "1.0.0",
+    "type": "module",
+    "description": "Módulo de cotações de frete para Magento 2 da Central do Frete.",
+    "authors": [
+        {
+            "name": "Buzz e-Commerce",
+            "email": "contato@sitedabuzz.com.br"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {},
+    "autoload": {
+        "files": [
+          "registration.php"
+        ],
+        "psr-4": {
+          "Buzz\\CentralDoFrete\\": ""
+        }
+      }
+}
