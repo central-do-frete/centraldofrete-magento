@@ -14,7 +14,7 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="name" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Central do Frete</label>
+                    <label>Name</label>
                 </field>
                 <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Sort Order</label>
@@ -23,10 +23,10 @@
                     <label>Title</label>
                 </field>
                 <field id="token" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Your API token</label>
+                    <label>API Token</label>
                 </field>
                 <field id="adddays" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Add time to delivery</label>
+                    <label>Additional Lead Time (days)</label>
                     <frontend_class>validate-number</frontend_class>
                 </field>
                 <field id="sallowspecific" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
