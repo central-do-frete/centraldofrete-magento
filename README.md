@@ -26,8 +26,8 @@ Para o correto funcionamento do módulo, realize as configurações de token, ma
 
 Caso ainda não tenha o token, faça o cadastro em https://app.centraldofrete.com/cadastro
 
-![alt text](https://imgur.com/iyDygPo "Configurações do método de entrega")
-![alt text](https://imgur.com/FfbE9Nw "Configuração dos atributos")
+![Configuração](https://i.imgur.com/iyDygPo.png)
+![Configuração](https://i.imgur.com/FfbE9Nw.png)
 
 # Suporte
 Em caso de problemas, por favor, envie-nos um e-mail (contato@sitedabuzz.com.br) com o máximo de informações possíveis acerca da ocorrência.
