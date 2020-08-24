@@ -9,7 +9,7 @@
             "email": "contato@sitedabuzz.com.br"
         }
     ],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "require": {},
     "autoload": {
         "files": [
