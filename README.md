@@ -29,7 +29,23 @@ Caso ainda não tenha o token, faça o cadastro em https://app.centraldofrete.co
 ![Configuração](https://i.imgur.com/iyDygPo.png)
 ![Configuração](https://i.imgur.com/FfbE9Nw.png)
 
-# Código da Cotação de Frete
+# Uso
+Atenção nas configurações do módulo.
+
+## Tipos de Carga
+
+Após o salvamento das configurações do módulo, com o token válido, os tipos de carga serão baixados e estarão disponíveis nas configurações do produto e do módulo da Central do Frete. Caso o tipo de garga não esteja selecionado no produto, o módulo optará por enviar na cotação o tipo padrão selecionado nas configurações padrão do módulo. 
+
+![Seleção do tipo de carga nas configurações do módulo](https://i.imgur.com/Garv45Q.png)
+
+*Seleção do tipo de carga nas configurações do módulo*
+
+![Seleção do tipo de carga nas configurações do produto](https://i.imgur.com/XW5xAhD.png)
+
+*Seleção do tipo de carga nas configurações do produto*
+
+
+## Código da Cotação de Frete 
 Para visualizar o código da cotação do frete, abra a visualização de pedido no painel administrativo da sua loja, como imagem abaixo.
 
 ![Configuração](https://i.imgur.com/ljYQlv3.png)
