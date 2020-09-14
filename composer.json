@@ -1,6 +1,6 @@
 {
     "name": "buzzmage/centraldofrete-magento",
-    "version": "1.0.40",
+    "version": "1.0.50",
     "type": "module",
     "description": "Módulo de cotações de frete para Magento 2 da Central do Frete.",
     "authors": [
