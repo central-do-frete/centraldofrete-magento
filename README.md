@@ -29,5 +29,10 @@ Caso ainda não tenha o token, faça o cadastro em https://app.centraldofrete.co
 ![Configuração](https://i.imgur.com/iyDygPo.png)
 ![Configuração](https://i.imgur.com/FfbE9Nw.png)
 
+# Código da Cotação de Frete
+Para visualizar o código da cotação do frete, abra a visualização de pedido no painel administrativo da sua loja, como imagem abaixo.
+
+![Configuração](https://i.imgur.com/ljYQlv3.png)
+
 # Suporte
 Em caso de problemas, por favor, envie-nos um e-mail (contato@sitedabuzz.com.br) com o máximo de informações possíveis acerca da ocorrência.
