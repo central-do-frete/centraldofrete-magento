@@ -5,6 +5,13 @@ declare(strict_types=1);
 namespace Buzz\CentralDoFrete\Helper;
 
 use \Magento\Store\Model\ScopeInterface;
+use GuzzleHttp\Psr7\ResponseFactory;
+use GuzzleHttp\Client;
+use GuzzleHttp\ClientFactory;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Response;
+use Magento\Framework\Webapi\Rest\Request;
+
 
 /**
  * Class Config
@@ -16,15 +23,24 @@ class Data
 
     const KG_TO_LBS_FACTOR = 2.20462;
 
+    const API_REQUEST_URI = 'https://api.centraldofrete.com/';
+    const SB_API_REQUEST_URI = 'https://sandbox.centraldofrete.com/';
+
     private $scopeConfig;
     private $storeManager;
 
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Store\Model\StoreManagerInterface $storeManager
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        ResponseFactory $responseFactory,
+        \Buzz\CentralDoFrete\Model\CargoTypesFactory $cargoTypesFactory,
+        ClientFactory $clientFactory
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
+        $this->clientFactory = $clientFactory;
+        $this->responseFactory = $responseFactory;
+        $this->cargoTypesFactory = $cargoTypesFactory;
     }
 
     public function isActive($store = null)
@@ -75,6 +91,13 @@ class Data
     public function getDefaultWidth($store = null)
     {
         return (float) $this->getCarrierConfig('default_measurements/default_width', $store);
+    }
+
+    public function getDefaultCargoType($store = null)
+    {
+        $cargoType = (int) $this->getCarrierConfig('default_cargo_type', $store);
+        $cargoTypeObject = $this->cargoTypesFactory->create()->load($cargoType);
+        return $cargoTypeObject->getData('id_api');
     }
 
     public function getAddDays($store = null)
@@ -139,4 +162,39 @@ class Data
         }
     }
 
+    public function doRequest(
+        string $uriEndpoint,
+        array $params = [],
+        string $requestMethod = Request::HTTP_METHOD_GET
+    ) {
+        /** @var Client $client */
+        $client = $this->clientFactory->create(['config' => [
+            'base_uri' => self::API_REQUEST_URI
+        ]]);
+
+        try {
+            $response = $client->request(
+                $requestMethod,
+                $uriEndpoint,
+                $params
+            );
+        } catch (GuzzleException $exception) {
+            /** @var Response $response */
+            $response = $this->responseFactory->create([
+                'status' => $exception->getCode(),
+                'reason' => $exception->getMessage()
+            ]);
+        }
+
+        return $response;
+    }
+
+    public function getAPIBaseURL()
+    {
+        if ($this->getCarrierConfig('sandbox')) {
+            return self::SB_API_REQUEST_URI;
+        } else {
+            return self::API_REQUEST_URI;
+        }
+    }
 }
