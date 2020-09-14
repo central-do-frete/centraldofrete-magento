@@ -4,22 +4,14 @@ declare(strict_types=1);
 
 namespace Buzz\CentralDoFrete\Model\Carrier;
 
-use Exception;
 use Magento\Quote\Model\Quote\Address\RateRequest;
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientFactory;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\ResponseFactory;
-use Magento\Framework\Webapi\Rest\Request;
+
 use Buzz\CentralDoFrete\Helper\Data as HelperData;
 
 class CentralDoFrete extends \Magento\Shipping\Model\Carrier\AbstractCarrier implements
     \Magento\Shipping\Model\Carrier\CarrierInterface
 {
 
-    const API_REQUEST_URI = 'https://api.centraldofrete.com/';
-    const SB_API_REQUEST_URI = 'https://sandbox.centraldofrete.com/';
     const CARRIER_CODE = 'centraldofrete';
 
     /**
@@ -55,8 +47,7 @@ class CentralDoFrete extends \Magento\Shipping\Model\Carrier\AbstractCarrier imp
         \Magento\Shipping\Model\Rate\ResultFactory $rateResultFactory,
         \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory,
         \Magento\Checkout\Model\Cart $cart,
-        ClientFactory $clientFactory,
-        ResponseFactory $responseFactory,
+        \Magento\Catalog\Model\ProductFactory $productFactory,
         HelperData $helper,
         array $data = []
     ) {
@@ -64,10 +55,9 @@ class CentralDoFrete extends \Magento\Shipping\Model\Carrier\AbstractCarrier imp
         $this->_rateMethodFactory = $rateMethodFactory;
         $this->_cart = $cart;
         $this->_logger = $logger;
-        $this->_clientFactory = $clientFactory;
-        $this->_responseFactory = $responseFactory;
         $this->_scopeConfig = $scopeConfig;
         $this->_helper = $helper;
+        $this->_productFactory = $productFactory;
         parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
     }
 
@@ -77,7 +67,7 @@ class CentralDoFrete extends \Magento\Shipping\Model\Carrier\AbstractCarrier imp
      */
     public function collectRates(RateRequest $request)
     {
-        if (!$this->getConfigFlag('active')) {
+        if (!$this->_helper->isActive()) {
             return false;
         }
 
@@ -88,8 +78,16 @@ class CentralDoFrete extends \Magento\Shipping\Model\Carrier\AbstractCarrier imp
 
 
         $quotationData = [];
+        $quotationData['cargo_types'] = [];
+
         $this->_logger->debug('Central do Frete:: coletando dados dos itens');
         foreach ($quote->getAllVisibleItems() as $item) {
+
+            $productId = $item->getProduct()->getId();
+            if ($option = $item->getOptionByCode('simple_product')) {
+                $productId = $option->getProduct()->getId();
+            }
+            $productInstance = $this->_productFactory->create()->load($productId);
 
             $defWidthAttribute = $this->_helper->getWidthAttribute();
             $defHeightAttribute = $this->_helper->getHeightAttribute();
@@ -125,7 +123,18 @@ class CentralDoFrete extends \Magento\Shipping\Model\Carrier\AbstractCarrier imp
                 "length" => $valueLength,
                 "weight" => $valueWeight
             ];
+            $productCargoType = $productInstance->getData('centraldofrete_cargotype');
+            if ($productCargoType) {
+                $this->_logger->debug('Central do Frete:: cargo type do produto');
+                $lastCargoType = $productCargoType;
+            } else {
+                $this->_logger->debug('Central do Frete:: cargo type padrão');
+                $lastCargoType = $this->_helper->getDefaultCargoType();
+            }
+            $quotationData['cargo_types'][] = $lastCargoType;
+            $this->_logger->debug('Central do Frete:: cargo type ' . $lastCargoType . ' ' . $productInstance->getName());
         }
+        $quotationData['cargo_types'] = array_unique($quotationData['cargo_types']);
         $quotationData['invoice_amount'] = $quote->getGrandTotal();
 
         $originPostcode = $this->_scopeConfig->getValue(\Magento\Shipping\Model\Config::XML_PATH_ORIGIN_POSTCODE);
@@ -138,11 +147,6 @@ class CentralDoFrete extends \Magento\Shipping\Model\Carrier\AbstractCarrier imp
         $destinationPostcode = str_pad($destinationPostcode, 8, '0', STR_PAD_LEFT);
         $quotationData['to'] = preg_replace('/[^0-9]/', '', $destinationPostcode);
 
-        // $quotationData['from'] = "09531190";
-        // $quotationData['to'] = "30240440";
-
-
-        $quotationData['cargo_types'] = ['137'];
         $quotationData['recipient'] = [
             'document' => preg_replace('/[^0-9]/', '', '20893627000126'),
             'name' => 'Buzz e-Commerce'
@@ -161,15 +165,15 @@ class CentralDoFrete extends \Magento\Shipping\Model\Carrier\AbstractCarrier imp
         $headers['body'] = json_encode($quotationData);
 
         $this->_logger->debug('Central do Frete:: URL');
-        $this->_logger->debug($this->getAPIBaseURL());
+        $this->_logger->debug($this->_helper->getAPIBaseURL());
 
         $this->_logger->debug('Central do Frete:: Endpoint');
         $this->_logger->debug($newQuotationEndpoint);
 
         $this->_logger->debug('Central do Frete:: Headers');
         $this->_logger->debug(json_encode($headers));
-        $response = $this->doRequest(
-            $this->getAPIBaseURL() . $newQuotationEndpoint,
+        $response = $this->_helper->doRequest(
+            $this->_helper->getAPIBaseURL() . $newQuotationEndpoint,
             $headers,
             'POST'
         );
@@ -187,7 +191,7 @@ class CentralDoFrete extends \Magento\Shipping\Model\Carrier\AbstractCarrier imp
         $this->_logger->debug('Central do Frete:: Código da cotação - ' . $code);
 
         $detailsEndpoint = "v1/quotation/" . $code;
-        $response = $this->doRequest(
+        $response = $this->_helper->doRequest(
             $detailsEndpoint,
             $headers
         );
@@ -199,6 +203,9 @@ class CentralDoFrete extends \Magento\Shipping\Model\Carrier\AbstractCarrier imp
             $this->_logger->error('Central do Frete:: Erro ao obter cotações - ' . $response->getStatusCode());
             return false;
         }
+        $quote->setData('centraldofrete_code', $code);
+        $quote->save();
+
         $body = $response->getBody();
         $responseRates = json_decode($body->getContents());
         $this->_logger->debug('Central do Frete:: Cotações Obtidas');
@@ -229,41 +236,5 @@ class CentralDoFrete extends \Magento\Shipping\Model\Carrier\AbstractCarrier imp
     {
 
         return [$this->_code => $this->_helper->getCarrierConfig('name')];
-    }
-
-    private function doRequest(
-        string $uriEndpoint,
-        array $params = [],
-        string $requestMethod = Request::HTTP_METHOD_GET
-    ) {
-        /** @var Client $client */
-        $client = $this->_clientFactory->create(['config' => [
-            'base_uri' => self::API_REQUEST_URI
-        ]]);
-
-        try {
-            $response = $client->request(
-                $requestMethod,
-                $uriEndpoint,
-                $params
-            );
-        } catch (GuzzleException $exception) {
-            /** @var Response $response */
-            $response = $this->_responseFactory->create([
-                'status' => $exception->getCode(),
-                'reason' => $exception->getMessage()
-            ]);
-        }
-
-        return $response;
-    }
-
-    public function getAPIBaseURL()
-    {
-        if ($this->getConfigFlag('sandbox')) {
-            return self::SB_API_REQUEST_URI;
-        } else {
-            return self::API_REQUEST_URI;
-        }
     }
 }
