@@ -49,6 +49,3 @@ Após o salvamento das configurações do módulo, com o token válido, os tipos
 Para visualizar o código da cotação do frete, abra a visualização de pedido no painel administrativo da sua loja, como imagem abaixo.
 
 ![Configuração](https://i.imgur.com/ljYQlv3.png)
-
-# Suporte
-Em caso de problemas, por favor, envie-nos um e-mail (contato@sitedabuzz.com.br) com o máximo de informações possíveis acerca da ocorrência.
