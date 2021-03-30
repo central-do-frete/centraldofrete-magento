@@ -8,7 +8,7 @@ Esta versão do módulo é compatível com o Magento 2.2+.
 Faça o download do repositório usando uma das seguintes alternativas:
 
 ### Usando o Composer (recomendado)
-```composer require buzzmage/centraldofrete-magento:dev-master```
+```composer require centraldofrete/centraldofrete-magento```
 
 ### Manualmente
 Baixe o presente repositório e mova para o diretório *app/code/Buzz/CentralDoFrete*.
