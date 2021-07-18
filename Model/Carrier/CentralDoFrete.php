@@ -46,14 +46,12 @@ class CentralDoFrete extends \Magento\Shipping\Model\Carrier\AbstractCarrier imp
         \Psr\Log\LoggerInterface $logger,
         \Magento\Shipping\Model\Rate\ResultFactory $rateResultFactory,
         \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory,
-        \Magento\Checkout\Model\Cart $cart,
         \Magento\Catalog\Model\ProductFactory $productFactory,
         HelperData $helper,
         array $data = []
     ) {
         $this->_rateResultFactory = $rateResultFactory;
         $this->_rateMethodFactory = $rateMethodFactory;
-        $this->_cart = $cart;
         $this->_logger = $logger;
         $this->_scopeConfig = $scopeConfig;
         $this->_helper = $helper;
@@ -74,14 +72,16 @@ class CentralDoFrete extends \Magento\Shipping\Model\Carrier\AbstractCarrier imp
         /** @var \Magento\Shipping\Model\Rate\Result $result */
         $result = $this->_rateResultFactory->create();
 
-        $quote = $this->_cart->getQuote();
-
-
         $quotationData = [];
         $quotationData['cargo_types'] = [];
 
         $this->_logger->debug('Central do Frete:: coletando dados dos itens');
-        foreach ($quote->getAllVisibleItems() as $item) {
+        $total = 0;
+        foreach ($request->getAllItems() as $item) {
+            
+            if (!$total) {
+                $total = $item->getQuote()->collectTotals()->getGrandTotal();
+            }
 
             $productId = $item->getProduct()->getId();
             if ($option = $item->getOptionByCode('simple_product')) {
@@ -135,7 +135,7 @@ class CentralDoFrete extends \Magento\Shipping\Model\Carrier\AbstractCarrier imp
             $this->_logger->debug('Central do Frete:: cargo type ' . $lastCargoType . ' ' . $productInstance->getName());
         }
         $quotationData['cargo_types'] = array_unique($quotationData['cargo_types']);
-        $quotationData['invoice_amount'] = $quote->getGrandTotal();
+        $quotationData['invoice_amount'] = $total;
 
         $originPostcode = $this->_scopeConfig->getValue(\Magento\Shipping\Model\Config::XML_PATH_ORIGIN_POSTCODE);
         $originPostcode = preg_replace('/[^0-9]/', null, $originPostcode);
