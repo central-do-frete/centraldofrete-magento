@@ -159,7 +159,8 @@ class CentralDoFrete extends \Magento\Shipping\Model\Carrier\AbstractCarrier imp
 
         $headers['headers'] = [
             'Authorization' => $this->_helper->getToken(),
-            'Content-Type'     => 'application/json',
+            'Content-Type' => 'application/json',
+            'source' => 'MAGENTO'
         ];
 
         $headers['body'] = json_encode($quotationData);

@@ -38,6 +38,7 @@ class GetCargoTypes implements \Magento\Framework\Event\ObserverInterface
             $headers['headers'] = [
                 'Authorization' => $this->helper->getToken(),
                 'Content-Type'     => 'application/json',
+                'source' => 'MAGENTO'
             ];
 
             $this->logger->debug('Central do Frete:: URL');
