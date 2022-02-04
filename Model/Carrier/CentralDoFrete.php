@@ -217,7 +217,8 @@ class CentralDoFrete extends \Magento\Shipping\Model\Carrier\AbstractCarrier imp
             $method->setCarrier($this->_code);
             $method->setCarrierTitle($price->shipping_carrier);
             $method->setMethod($price->shipping_carrier);
-            $method->setMethodTitle($this->service_type . " - " . ($price->delivery_time + $this->_helper->getAddDays() . " dias para a entrega."));
+            $deliveyTime = ($price->delivery_time + $this->_helper->getAddDays() . " dias para a entrega.");
+            $method->setMethodTitle(is_null($price->service_type) ? $deliveyTime : $price->service_type . ' - ' . $deliveyTime);
             $method->setPrice($price->price);
             $method->setCost($price->price);
             $method->setMethodDetails('DETALHES');
